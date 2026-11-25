@@ -264,6 +264,19 @@ company_exclude: []
 company_include_only: []
 
 title_exclude:
+  # Senior / Principal / Lead roles (Avoid seniority mismatch for Fresher)
+  - "Principal Data Scientist"
+  - "Senior Data Scientist"
+  - "Lead Data Scientist"
+  - "Principal"
+  - "Senior"
+  - "Sr."
+  - "Lead"
+  - "Architect"
+  - "Manager"
+  - "Director"
+  - "Head"
+
   # Customer Support, Voice / Non-Voice Process, BPO, Telecalling (NEVER APPLY)
   - "Voice Process Executive"
   - "International Voice Process"
@@ -299,7 +312,7 @@ title_exclude:
   - "telecaller"
   - "tele-caller"
   - "telemarketing"
-
+  - "civil"
 
 seniority_floor_years: 0
 seniority_ceiling_years: 2
