@@ -40,6 +40,36 @@ STOP_PHRASES = [
 ]
 
 
+def passes_filters(card: dict, profile: Profile) -> tuple[bool, str]:
+    title = (card.get("title") or "").lower()
+    company = (card.get("company") or "").lower()
+
+    for excl_role in profile.data.get("exclude_roles", []):
+        if excl_role.lower() in title:
+            return False, f"hard excluded role ({excl_role})"
+
+    for excl_kw in profile.data.get("exclude_keywords", []):
+        clean_kw = excl_kw.strip().lower()
+        if clean_kw and clean_kw in title:
+            return False, f"hard excluded keyword ({excl_kw})"
+
+    for excl_jt in profile.data.get("job_type", {}).get("exclude", []):
+        if excl_jt.lower() in title:
+            return False, f"excluded job type ({excl_jt})"
+
+    for excl in profile.data.get("title_exclude", []):
+        if excl.lower() in title:
+            return False, f"title matched excluded pattern ({excl})"
+
+    exp_filter = profile.data.get("experience_filter", {})
+    if exp_filter.get("reject_senior_roles", True):
+        senior_markers = ["senior", "sr.", "principal", "lead", "architect", "manager", "director", "head"]
+        if any(marker in title for marker in senior_markers):
+            return False, "senior position rejected (Fresher profile)"
+
+    return True, ""
+
+
 def log_row(row: list):
     new_file = not Path(LOG_FILE).exists()
     with open(LOG_FILE, "a", newline="") as f:
@@ -251,16 +281,11 @@ def run():
                 if applied >= profile.stop_after_n_applications:
                     break
 
-                card_title = (card.get("title") or "").lower()
-                excluded = False
-                for excl in profile.data.get("title_exclude", []):
-                    if excl.lower() in card_title:
-                        log_row([datetime.now(), "linkedin", card.get("title"),
-                                  card.get("company"), "skipped", f"title matched excluded pattern ({excl})"])
-                        print(f"Skipped: {card.get('title')} @ {card.get('company')} — excluded title ({excl})")
-                        excluded = True
-                        break
-                if excluded:
+                ok, reason = passes_filters(card, profile)
+                if not ok:
+                    log_row([datetime.now(), "linkedin", card.get("title"),
+                              card.get("company"), "skipped", reason])
+                    print(f"Skipped: {card.get('title')} @ {card.get('company')} — {reason}")
                     continue
 
                 try:

@@ -99,7 +99,6 @@ target_roles:
   - "Junior Software Developer"
   - "Software Development Engineer"
   - "Trainee Software Engineer"
-  - "Application Support Engineer"
   - "Product Engineer - Junior"
   - "Technology Analyst - Fresher"
   - "Engineering Trainee"
@@ -195,7 +194,6 @@ role_required_keywords:
   "Junior Software Developer": ["software developer", "junior developer", "software engineer"]
   "Software Development Engineer": ["software development engineer", "sde", "software engineer"]
   "Trainee Software Engineer": ["trainee", "software engineer", "trainee engineer"]
-  "Application Support Engineer": ["application support", "support engineer", "technical support"]
   "Product Engineer - Junior": ["product engineer", "software engineer", "developer"]
   "Technology Analyst - Fresher": ["technology analyst", "analyst", "fresher"]
   "Engineering Trainee": ["engineering trainee", "trainee", "engineer"]
@@ -263,6 +261,109 @@ work_history_narrative: |
 company_exclude: []
 company_include_only: []
 
+# ==========================================================================
+# JOB FILTERING — HARD EXCLUSIONS
+# ==========================================================================
+
+exclude_roles:
+  - "Customer Support"
+  - "Customer Service"
+  - "Voice Process"
+  - "Non Voice Process"
+  - "International Voice Process"
+  - "Domestic Voice Process"
+  - "Technical Support Executive"
+  - "Technical Support Associate"
+  - "Customer Care Executive"
+  - "Call Center Executive"
+  - "BPO Executive"
+  - "Process Associate"
+  - "Telecaller"
+  - "Chat Support Executive"
+  - "Email Support Executive"
+  - "Application Support Engineer"
+  - "Service Desk Analyst"
+  - "IT Helpdesk"
+
+exclude_keywords:
+  - "voice process"
+  - "non voice process"
+  - "inbound calls"
+  - "outbound calls"
+  - "call center"
+  - "customer support"
+  - "customer service"
+  - "customer care"
+  - "chat support"
+  - "email support"
+  - "international process"
+  - "domestic process"
+  - " BPO "
+  - "telecalling"
+  - "cold calling"
+  - "sales calling"
+  - "service desk"
+  - "helpdesk"
+  - "technical support executive"
+
+# ==========================================================================
+# EXPERIENCE FILTER
+# ==========================================================================
+
+experience_filter:
+  candidate_level: "Fresher"
+  professional_experience_years: 0
+  accept_project_experience: true
+  preferred_min_years: 0
+  preferred_max_years: 2
+  reject_if_minimum_experience_above: 2
+  reject_senior_roles: true
+
+  acceptable_levels:
+    - "Fresher"
+    - "Entry Level"
+    - "Graduate"
+    - "Trainee"
+    - "Junior"
+    - "Associate"
+    - "Intern"
+
+# ==========================================================================
+# JOB TYPE FILTER
+# ==========================================================================
+
+job_type:
+  include:
+    - "Full Time"
+    - "Internship"
+    - "Graduate Trainee"
+    - "Contract"
+  exclude:
+    - "Voice Process"
+    - "Customer Support"
+    - "Sales"
+    - "Telecalling"
+
+# ==========================================================================
+# MATCHING SCORE
+# ==========================================================================
+
+matching:
+  minimum_score: 60
+
+  weights:
+    exact_target_role: 35
+    relevant_title_keywords: 20
+    relevant_responsibilities: 20
+    technical_skills: 15
+    fresher_eligibility: 10
+
+  hard_reject:
+    excluded_role: true
+    excluded_keyword_in_job_context: true
+    experience_above_limit: true
+    senior_position: true
+
 title_exclude:
   # Senior / Principal / Lead roles (Avoid seniority mismatch for Fresher)
   - "Principal Data Scientist"
@@ -294,6 +395,7 @@ title_exclude:
   - "Helpdesk Support"
   - "Voice and Chat Process"
   - "Blended Process"
+  - "Application Support Engineer"
   - "voice process"
   - "non-voice"
   - "non voice"
@@ -313,6 +415,7 @@ title_exclude:
   - "tele-caller"
   - "telemarketing"
   - "civil"
+
 
 seniority_floor_years: 0
 seniority_ceiling_years: 2

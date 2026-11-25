@@ -75,10 +75,50 @@ def passes_filters(card: dict, profile: Profile, role: str) -> tuple[bool, str]:
     title = (card.get("title") or "").lower()
     company = (card.get("company") or "").lower()
 
-    # 1. Negative title filter: reject any voice/call center/customer support jobs
+    # 1. Hard Excluded Roles
+    for excl_role in profile.data.get("exclude_roles", []):
+        if excl_role.lower() in title:
+            return False, f"hard excluded role ({excl_role})"
+
+    # 2. Hard Excluded Keywords
+    for excl_kw in profile.data.get("exclude_keywords", []):
+        clean_kw = excl_kw.strip().lower()
+        if clean_kw and clean_kw in title:
+            return False, f"hard excluded keyword ({excl_kw})"
+
+    # 3. Job Type Exclusions
+    for excl_jt in profile.data.get("job_type", {}).get("exclude", []):
+        if excl_jt.lower() in title:
+            return False, f"excluded job type ({excl_jt})"
+
+    # 4. Negative title filter
     for excl in profile.data.get("title_exclude", []):
         if excl.lower() in title:
             return False, f"title matched excluded pattern ({excl})"
+
+    # 5. Experience Filter & Senior Position Rejection
+    exp_filter = profile.data.get("experience_filter", {})
+    if exp_filter.get("reject_senior_roles", True):
+        senior_markers = ["senior", "sr.", "principal", "lead", "architect", "manager", "director", "head"]
+        if any(marker in title for marker in senior_markers):
+            return False, "senior position rejected (Fresher profile)"
+
+    exp_text = card.get("exp") or ""
+    digits = [int(s) for s in exp_text.replace("Yrs", "").replace("yrs", "")
+              .replace("-", " ").split() if s.isdigit()]
+    
+    max_min_exp = exp_filter.get("reject_if_minimum_experience_above", profile.seniority_ceiling_years)
+    if digits:
+        min_exp = digits[0]
+        if min_exp > max_min_exp:
+            return False, f"minimum experience ({min_exp} yrs) exceeds limit ({max_min_exp} yrs)"
+
+    if len(digits) >= 2:
+        lo, hi = digits[0], digits[-1]
+        pref_min = exp_filter.get("preferred_min_years", profile.seniority_floor_years)
+        pref_max = exp_filter.get("preferred_max_years", profile.seniority_ceiling_years)
+        if hi < pref_min or lo > pref_max:
+            return False, f"experience range mismatch ({exp_text})"
 
     required_keywords = profile.data.get("role_required_keywords", {}).get(role)
     if not required_keywords:
@@ -94,14 +134,6 @@ def passes_filters(card: dict, profile: Profile, role: str) -> tuple[bool, str]:
     if profile.company_include_only:
         if not any(inc.lower() in company for inc in profile.company_include_only):
             return False, "not in include-only list"
-
-    exp_text = card.get("exp") or ""
-    digits = [int(s) for s in exp_text.replace("Yrs", "").replace("yrs", "")
-              .replace("-", " ").split() if s.isdigit()]
-    if len(digits) >= 2:
-        lo, hi = digits[0], digits[-1]
-        if hi < profile.seniority_floor_years or lo > profile.seniority_ceiling_years:
-            return False, f"experience range mismatch ({exp_text})"
 
     return True, ""
 
