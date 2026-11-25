@@ -98,6 +98,13 @@ Edit `.env` and fill in:
 ```
 GEMINI_API_KEY=your-real-key-here
 GROQ_API_KEY=your-real-key-here          # optional but recommended
+
+# Optional: Saved login credentials for automatic sign-in & session recovery
+NAUKRI_EMAIL=your-naukri-email-or-username
+NAUKRI_PASSWORD=your-naukri-password
+
+LINKEDIN_EMAIL=your-linkedin-email
+LINKEDIN_PASSWORD=your-linkedin-password
 ```
 
 ### Configure your profile
@@ -115,16 +122,15 @@ committed if you fork/push this repo.
 Put your resume in the project folder with the exact filename set in
 `resume_file_name`.
 
-### Capture your login session
+### Capture your login session & save credentials
 
 ```bash
 python login_capture.py naukri
 ```
 
-A real browser window opens. Log in by hand -- password, OTP, any
-verification. Once you're on your logged-in Naukri homepage, go back to
-the terminal and press Enter. This saves `session_naukri.json` (gitignored
--- treat it like a password, it's equivalent to being logged in).
+If your credentials are saved in `.env`, the script will automatically pre-fill your email/username and password. If not yet saved, it will prompt you if you want to save them to `.env` so you don't have to enter them in the future.
+After solving any 2FA/OTP or CAPTCHA, pressing Enter saves `session_naukri.json`.
+The apply scripts will also automatically refresh and persist your session cookies across runs so you stay logged in.
 
 ### Run it
 

@@ -15,6 +15,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
 from common.profile import Profile
+from common.auth import get_credentials, fill_credentials_and_submit, perform_login
 
 SESSION_FILE = "session_naukri.json"
 PROFILE_URL = "https://www.naukri.com/mnjuser/profile"
@@ -100,7 +101,13 @@ def upload_resume(page, resume_path: Path) -> bool:
 def run():
     profile = Profile.load()
     if not Path(SESSION_FILE).exists():
-        raise SystemExit(f"{SESSION_FILE} not found. Run: python login_capture.py naukri")
+        username, password = get_credentials("naukri")
+        if username and password:
+            print(f"{SESSION_FILE} not found, but saved credentials found in .env. Logging in...")
+            with sync_playwright() as p:
+                perform_login(p, "naukri", headless=False, session_file=SESSION_FILE)
+        else:
+            raise SystemExit(f"{SESSION_FILE} not found. Run: python login_capture.py naukri (or add NAUKRI_EMAIL and NAUKRI_PASSWORD to .env)")
 
     resume_filename = profile.data.get("resume_file_name")
     if not resume_filename:
@@ -165,6 +172,11 @@ def run():
         except PWTimeout:
             print("WARNING: couldn't confirm the resume re-appeared after upload — check manually.")
 
+        try:
+            context.storage_state(path=SESSION_FILE)
+            print(f"Updated session state saved to {SESSION_FILE}.")
+        except Exception:
+            pass
         browser.close()
 
 

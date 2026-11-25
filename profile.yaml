@@ -1,89 +1,318 @@
 # ==========================================================================
-# YOUR APPLICATION PROFILE
-# Copy this file to profile.yaml (that filename is gitignored, so your real
-# details never get committed) and fill it in with real facts. Every answer
-# the script gives on a form is generated from this file -- nothing here
-# should be something you'd be uncomfortable being asked about in an
-# interview.
+# YOUR APPLICATION PROFILE — Kandikatla Vishnu
 # ==========================================================================
 
 target_roles:
-  - "Data Engineer"
-  - "Backend Developer"
-  # add every role variant you actually want to be found under
+  # ==========================================================================
+  # 1. Generative AI & Agentic AI roles (Highest Priority)
+  # ==========================================================================
+  - "Generative AI Engineer"
+  - "Junior Generative AI Engineer"
+  - "Associate Generative AI Engineer"
+  - "AI Engineer - Fresher"
+  - "Junior AI Engineer"
+  - "Associate AI Engineer"
+  - "Agentic AI Engineer"
+  - "AI Agent Developer"
+  - "AI Automation Engineer"
+  - "LLM Application Developer"
+  - "LLM Engineer - Entry Level"
+  - "AI Application Developer"
+  - "AI Solutions Developer"
+  - "Conversational AI Developer"
+  - "AI Workflow Engineer"
+  - "Multi-Agent Systems Developer"
+  - "AI Integration Engineer"
+  - "Prompt Engineer - Junior"
+  - "AI Research Assistant"
+  - "Applied AI Engineer"
 
-# Controls how strictly a job's title must match the role you searched for.
-# Naukri's own search is loose (e.g. "Data Engineer" can surface completely
-# unrelated titles), so this filter re-checks the title itself. A card is
-# kept only if its title contains at least one of these words. If a role
-# isn't listed here, the script falls back to using the role's own words
-# (minus generic terms like "engineer"/"developer").
+  # ==========================================================================
+  # 2. RAG, LLM & NLP roles
+  # ==========================================================================
+  - "RAG Developer"
+  - "Junior RAG Engineer"
+  - "LLM Developer"
+  - "NLP Engineer - Fresher"
+  - "Junior NLP Developer"
+  - "Conversational AI Engineer"
+  - "Chatbot Developer"
+  - "AI Chatbot Engineer"
+  - "Knowledge Graph Developer"
+  - "LLM Application Engineer"
+  - "Retrieval Engineer - Junior"
+  - "AI Search Engineer"
+  - "Semantic Search Developer"
+  - "Vector Database Engineer - Junior"
+  - "LangChain Developer"
+  - "LangGraph Developer"
+  - "AI Orchestration Engineer"
+
+  # ==========================================================================
+  # 3. Python development roles (Strong Priority)
+  # ==========================================================================
+  - "Python Developer"
+  - "Junior Python Developer"
+  - "Associate Python Developer"
+  - "Python Software Engineer"
+  - "Python Backend Developer"
+  - "Backend Developer - Python"
+  - "Python API Developer"
+  - "FastAPI Developer"
+  - "Django Developer"
+  - "Python Automation Developer"
+  - "Software Developer - Python"
+  - "Python Programmer"
+  - "Application Developer - Python"
+  - "Junior Backend Engineer"
+  - "API Integration Developer"
+  - "REST API Developer"
+  - "Full Stack Python Developer"
+
+  # ==========================================================================
+  # 4. Machine Learning & Data Science roles
+  # ==========================================================================
+  - "Machine Learning Engineer"
+  - "Junior Machine Learning Engineer"
+  - "ML Engineer Trainee"
+  - "Associate ML Engineer"
+  - "AI/ML Engineer"
+  - "Data Science Associate"
+  - "Junior Data Scientist"
+  - "Data Science Intern"
+  - "ML Application Developer"
+  - "Applied Machine Learning Engineer"
+  - "Anomaly Detection Engineer"
+  - "Junior NLP Engineer"
+  - "ML Research Assistant"
+  - "Data Analyst - Python"
+  - "Junior Data Engineer"
+  - "AI Data Engineer"
+
+  # ==========================================================================
+  # 5. Software engineering roles
+  # ==========================================================================
+  - "Graduate Engineer Trainee"
+  - "Graduate Trainee Engineer"
+  - "Associate Software Engineer"
+  - "Software Engineer - Fresher"
+  - "Junior Software Developer"
+  - "Software Development Engineer"
+  - "Trainee Software Engineer"
+  - "Application Support Engineer"
+  - "Product Engineer - Junior"
+  - "Technology Analyst - Fresher"
+  - "Engineering Trainee"
+  - "Software Development Associate"
+  - "Junior Application Developer"
+  - "Technical Associate"
+  - "IT Engineer Trainee"
+
 role_required_keywords:
-  "Data Engineer": ["data engineer"]
-  "Backend Developer": ["backend developer", "backend engineer"]
+  # 1. Generative AI & Agentic AI
+  "Generative AI Engineer": ["generative ai", "genai", "gen ai", "llm", "ai", "artificial intelligence"]
+  "Junior Generative AI Engineer": ["generative ai", "genai", "gen ai", "llm", "ai"]
+  "Associate Generative AI Engineer": ["generative ai", "genai", "gen ai", "llm", "ai"]
+  "AI Engineer - Fresher": ["ai", "artificial intelligence", "ai engineer", "machine learning"]
+  "Junior AI Engineer": ["ai", "artificial intelligence", "ai engineer"]
+  "Associate AI Engineer": ["ai", "artificial intelligence", "ai engineer"]
+  "Agentic AI Engineer": ["agent", "agentic", "ai", "llm"]
+  "AI Agent Developer": ["agent", "agentic", "ai", "llm"]
+  "AI Automation Engineer": ["ai", "automation", "llm", "python"]
+  "LLM Application Developer": ["llm", "ai", "language model", "generative ai"]
+  "LLM Engineer - Entry Level": ["llm", "ai", "generative ai"]
+  "AI Application Developer": ["ai", "application", "software", "python"]
+  "AI Solutions Developer": ["ai", "solutions", "artificial intelligence"]
+  "Conversational AI Developer": ["conversational", "chatbot", "nlp", "ai", "llm"]
+  "AI Workflow Engineer": ["workflow", "ai", "automation", "agent"]
+  "Multi-Agent Systems Developer": ["agent", "multi-agent", "ai", "systems"]
+  "AI Integration Engineer": ["ai", "integration", "software", "api"]
+  "Prompt Engineer - Junior": ["prompt", "llm", "ai", "generative ai"]
+  "AI Research Assistant": ["ai", "research", "machine learning"]
+  "Applied AI Engineer": ["applied ai", "ai", "artificial intelligence"]
 
-current_city: "Bengaluru"
-relocate_cities: []          # e.g. ["Hyderabad", "Pune"] -- leave empty if you won't relocate
-work_mode: "onsite_or_hybrid"   # onsite_or_hybrid | remote_only | flexible
+  # 2. RAG, LLM & NLP
+  "RAG Developer": ["rag", "retrieval", "llm", "ai"]
+  "Junior RAG Engineer": ["rag", "retrieval", "llm", "ai"]
+  "LLM Developer": ["llm", "large language", "ai", "genai"]
+  "NLP Engineer - Fresher": ["nlp", "natural language", "text", "ai"]
+  "Junior NLP Developer": ["nlp", "natural language", "ai"]
+  "Conversational AI Engineer": ["conversational", "chatbot", "nlp", "ai"]
+  "Chatbot Developer": ["chatbot", "bot", "conversational", "ai"]
+  "AI Chatbot Engineer": ["chatbot", "bot", "ai", "nlp"]
+  "Knowledge Graph Developer": ["knowledge graph", "graph", "nlp", "ai"]
+  "LLM Application Engineer": ["llm", "ai", "application"]
+  "Retrieval Engineer - Junior": ["retrieval", "rag", "search", "ai"]
+  "AI Search Engineer": ["search", "semantic", "ai", "retrieval"]
+  "Semantic Search Developer": ["semantic", "search", "vector", "ai"]
+  "Vector Database Engineer - Junior": ["vector", "database", "rag", "ai"]
+  "LangChain Developer": ["langchain", "llm", "ai", "python"]
+  "LangGraph Developer": ["langgraph", "langchain", "agent", "ai"]
+  "AI Orchestration Engineer": ["orchestration", "workflow", "agent", "ai"]
+
+  # 3. Python Development
+  "Python Developer": ["python", "python developer", "software developer"]
+  "Junior Python Developer": ["python", "software developer"]
+  "Associate Python Developer": ["python", "software engineer"]
+  "Python Software Engineer": ["python", "software engineer", "developer"]
+  "Python Backend Developer": ["python", "backend", "api"]
+  "Backend Developer - Python": ["backend", "python", "api"]
+  "Python API Developer": ["python", "api", "rest", "backend"]
+  "FastAPI Developer": ["fastapi", "python", "backend", "api"]
+  "Django Developer": ["django", "python", "backend"]
+  "Python Automation Developer": ["python", "automation", "scripting"]
+  "Software Developer - Python": ["software developer", "python", "engineer"]
+  "Python Programmer": ["python", "programmer", "coder", "developer"]
+  "Application Developer - Python": ["python", "application", "developer"]
+  "Junior Backend Engineer": ["backend", "software", "api", "python"]
+  "API Integration Developer": ["api", "integration", "backend"]
+  "REST API Developer": ["rest", "api", "backend", "developer"]
+  "Full Stack Python Developer": ["python", "full stack", "fullstack", "developer"]
+
+  # 4. Machine Learning & Data Science
+  "Machine Learning Engineer": ["machine learning", "ml", "ai"]
+  "Junior Machine Learning Engineer": ["machine learning", "ml", "ai"]
+  "ML Engineer Trainee": ["ml", "machine learning", "trainee"]
+  "Associate ML Engineer": ["ml", "machine learning", "ai"]
+  "AI/ML Engineer": ["ai", "ml", "machine learning", "artificial intelligence"]
+  "Data Science Associate": ["data science", "data scientist"]
+  "Junior Data Scientist": ["data scientist", "data science"]
+  "Data Science Intern": ["data science", "data scientist", "intern"]
+  "ML Application Developer": ["ml", "machine learning", "application"]
+  "Applied Machine Learning Engineer": ["applied", "machine learning", "ml"]
+  "Anomaly Detection Engineer": ["anomaly", "machine learning", "ml", "detection"]
+  "Junior NLP Engineer": ["nlp", "natural language", "machine learning"]
+  "ML Research Assistant": ["research", "ml", "machine learning"]
+  "Data Analyst - Python": ["data analyst", "python", "analyst"]
+  "Junior Data Engineer": ["data engineer", "etl", "pipeline", "python"]
+  "AI Data Engineer": ["data engineer", "ai", "pipeline"]
+
+  # 5. Software Engineering
+  "Graduate Engineer Trainee": ["graduate engineer trainee", "get", "trainee", "engineer"]
+  "Graduate Trainee Engineer": ["graduate trainee", "trainee engineer", "graduate engineer"]
+  "Associate Software Engineer": ["associate software engineer", "ase", "software engineer"]
+  "Software Engineer - Fresher": ["software engineer", "software developer", "fresher"]
+  "Junior Software Developer": ["software developer", "junior developer", "software engineer"]
+  "Software Development Engineer": ["software development engineer", "sde", "software engineer"]
+  "Trainee Software Engineer": ["trainee", "software engineer", "trainee engineer"]
+  "Application Support Engineer": ["application support", "support engineer", "technical support"]
+  "Product Engineer - Junior": ["product engineer", "software engineer", "developer"]
+  "Technology Analyst - Fresher": ["technology analyst", "analyst", "fresher"]
+  "Engineering Trainee": ["engineering trainee", "trainee", "engineer"]
+  "Software Development Associate": ["software development", "software associate", "developer"]
+  "Junior Application Developer": ["application developer", "software developer"]
+  "Technical Associate": ["technical associate", "associate", "software"]
+  "IT Engineer Trainee": ["it engineer", "trainee", "engineer"]
+
+current_city: "Hyderabad"
+relocate_cities: ["Bengaluru", "Pune", "Chennai","Hyderabad"]
+work_mode: "flexible"
 night_shift_ok: false
 weekend_ok: false
 
 total_experience_years: 0
-current_employer: "Your Company Name"
-current_title_official: "Your Official Title"
-current_title_functional: "What you actually do day to day"
-notice_period_days: 30                         # set to your real, current notice period
-immediately_available: false
+current_employer: "Fresher"
+current_title_official: "Fresher"
+current_title_functional: "AI/ML Developer & Computer Science Graduate"
+notice_period_days: 0
+immediately_available: true
 
-current_ctc_lpa: null        # fill in your real number, in Lakhs Per Annum
-expected_ctc_lpa: null
-ctc_disclosure_policy: "negotiable"   # negotiable | real_numbers
+current_ctc_lpa: 0
+expected_ctc_lpa: 4
+ctc_disclosure_policy: "negotiable"
 
-highest_qualification: "Your degree, Your college"
-certifications: []           # e.g. ["AWS Certified Developer", "Azure Fundamentals"]
+highest_qualification: "B.Tech in Computer Science & Engineering, Jyothishmathi Institute of Technology & Science (2022-2026, GPA: 8/10)"
+certifications:
+  - "AI Agents: Intensive Vibe Coding Capstone — Kaggle & Google (2026)"
+  - "Introduction to Cloud Computing — IBM SkillsBuild (2026)"
+  - "Programming in Python — CodeTantra (2025)"
 
-skills_primary:              # things you'd rate yourself strongly on
-  - "Skill 1"
-  - "Skill 2"
+skills_primary:
+  - "Python"
+  - "Multi-Agent AI Systems"
+  - "LangChain"
+  - "LangGraph"
+  - "Google ADK"
+  - "RAG (Retrieval-Augmented Generation)"
+  - "Prompt Engineering"
+  - "LLM Integration"
+  - "FastAPI"
+  - "Django"
 
-skills_adjacent:             # real but lighter exposure -- answer these modestly, never round up
-  - "Skill you've self-studied or have light exposure to"
+skills_adjacent:
+  - "React.js"
+  - "Scikit-learn"
+  - "Pandas"
+  - "NumPy"
+  - "MongoDB"
+  - "Oracle SQL"
+  - "REST APIs"
+  - "NLP"
+  - "Anomaly Detection"
+  - "Git"
 
 work_history_narrative: |
-  Write 2-4 sentences in your own words describing your actual work
-  history and what you do. This is what free-text screening answers get
-  built from, so be specific and honest -- the AI won't invent anything
-  beyond what's written here.
+  Fresh Computer Science graduate from Jyothishmathi Institute of Technology & Science
+  (GPA 8/10). I build multi-agent AI systems — my key project, TravelBuddy, orchestrates
+  four specialized agents (itinerary, weather, recommendations, packing) through a shared
+  reasoning loop using Google ADK and Python. I also built AnomaShield, a data poisoning
+  detection pipeline using Isolation Forest and One-Class SVM, which I published as a
+  research paper in JETIR (2026). I'm proficient in LangChain, LangGraph, FastAPI, and
+  Django, and I focus on shipping AI agents as working products, not demos.
 
-company_exclude: []          # e.g. ["Your Current Employer"] -- filter rule, not a fact
-company_include_only: []     # leave empty to not restrict
+company_exclude: []
+company_include_only: []
+
+title_exclude:
+  # Customer Support, Voice / Non-Voice Process, BPO, Telecalling (NEVER APPLY)
+  - "Voice Process Executive"
+  - "International Voice Process"
+  - "Domestic Voice Process"
+  - "Non-Voice Process Executive"
+  - "Customer Support Executive"
+  - "Customer Service Representative"
+  - "Technical Support Executive"
+  - "International Customer Support"
+  - "Chat Support Executive"
+  - "Email Support Executive"
+  - "BPO / KPO Customer Service"
+  - "Call Centre Executive"
+  - "Customer Care Associate"
+  - "Helpdesk Support"
+  - "Voice and Chat Process"
+  - "Blended Process"
+  - "voice process"
+  - "non-voice"
+  - "non voice"
+  - "customer support"
+  - "customer service"
+  - "technical support"
+  - "chat support"
+  - "email support"
+  - "call centre"
+  - "call center"
+  - "customer care"
+  - "helpdesk"
+  - "bpo"
+  - "kpo"
+  - "telesales"
+  - "telecaller"
+  - "tele-caller"
+  - "telemarketing"
+
 
 seniority_floor_years: 0
-seniority_ceiling_years: 5
-job_freshness_days: 3          # Naukri's "freshness" filter -- only jobs posted in the last N days
+seniority_ceiling_years: 2
+job_freshness_days: 7
 
 salary_floor_lpa: null
 
-stop_after_n_applications: 20
+stop_after_n_applications: 50
 pace_seconds_between_actions: 30
 
-# How long to wait for you to type an answer when the script hits a
-# question it can't answer safely on its own (personal details like DOB,
-# or anything the AI genuinely doesn't know from your profile). If you
-# don't respond in time, that one listing is skipped -- the run continues.
 human_input_timeout_seconds: 120
-
-# How many search-result pages to go through per role before moving to the
-# next role (or stopping, if stop_after_n_applications is reached first).
 max_pages_per_role: 5
 
-# How the browser window behaves while running:
-#   "visible"   -- normal window, you can watch it (best for early runs / debugging)
-#   "minimized" -- a real browser still opens and does everything the same way,
-#                  but starts minimized to the taskbar so it's out of your way
-#   "headless"  -- no window at all, fastest, but a genuinely fake/invisible
-#                  browser is somewhat easier for a site to detect as a bot
-#                  than a real (even minimized) one -- slightly higher risk
-browser_mode: "minimized"
+browser_mode: "visible"
 
-resume_file_name: "your_resume.pdf"   # must match the filename already uploaded to Naukri/LinkedIn, and sit in this same project folder
+resume_file_name: "Kandikatla_Vishnu_Resume.pdf"

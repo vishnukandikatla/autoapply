@@ -11,6 +11,7 @@ answer, a stray page error) is handled per-listing: that one listing is
 skipped and logged, and the run continues.
 """
 import csv
+import re
 import time
 from datetime import datetime
 from pathlib import Path
@@ -21,6 +22,8 @@ from common.profile import Profile
 from common import llm
 from common import learned_answers
 from common.human_input import ask_user
+from common.auth import get_credentials, fill_credentials_and_submit, perform_login
+from common.job_exporter import log_external_job
 
 SESSION_FILE = "session_naukri.json"
 LOG_FILE = "applications_log.csv"
@@ -71,6 +74,11 @@ def log_row(row: list):
 def passes_filters(card: dict, profile: Profile, role: str) -> tuple[bool, str]:
     title = (card.get("title") or "").lower()
     company = (card.get("company") or "").lower()
+
+    # 1. Negative title filter: reject any voice/call center/customer support jobs
+    for excl in profile.data.get("title_exclude", []):
+        if excl.lower() in title:
+            return False, f"title matched excluded pattern ({excl})"
 
     required_keywords = profile.data.get("role_required_keywords", {}).get(role)
     if not required_keywords:
@@ -138,6 +146,26 @@ def check_apply_button(page) -> str:
     if page.query_selector('#apply-button'):
         return "native"
     return "none"
+
+
+def get_external_apply_url(page) -> str:
+    """Extracts company application URL from company-site-button if present."""
+    return safe_evaluate(page, """
+        () => {
+            const btn = document.querySelector('#company-site-button, a[class*="company-site-button"], [id*="company-site"]');
+            if (!btn) return '';
+            if (btn.href) return btn.href;
+            if (btn.getAttribute('data-href')) return btn.getAttribute('data-href');
+            if (btn.getAttribute('data-url')) return btn.getAttribute('data-url');
+            const oc = btn.getAttribute('onclick');
+            if (oc) {
+                const m = oc.match(/https?:\\/\\/[^'"\\s]+/);
+                if (m) return m[0];
+            }
+            return '';
+        }
+    """, default="") or ""
+
 
 
 def _wait_send_enabled(page, timeout_ms: int = 4000) -> bool:
@@ -349,11 +377,11 @@ def _handle_options_question(page, question: str, profile: Profile, timeout_s: i
 
     stored = learned_answers.get_answer(question)
     if stored:
-        for opt in options:
-            if opt["label"].strip().lower() == stored.strip().lower():
-                _click_option(page, opt["idx"])
-                print(f"  (used a remembered answer for: {question[:80]})")
-                return True
+        matched_opt = learned_answers.match_option(stored, options)
+        if matched_opt:
+            _click_option(page, matched_opt["idx"])
+            print(f"  (⚡ used a remembered answer '{matched_opt['label']}' for: {question[:80]})")
+            return True
 
     auto = _auto_decide_option(question, options, profile)
     if auto:
@@ -378,7 +406,7 @@ def _handle_options_question(page, question: str, profile: Profile, timeout_s: i
             idx = int(r)
             match = next((o for o in options if o["idx"] == idx), None)
         except ValueError:
-            match = next((o for o in options if o["label"].strip().lower() == r.lower()), None)
+            match = learned_answers.match_option(r, options)
         if match:
             matches.append(match)
 
@@ -387,7 +415,9 @@ def _handle_options_question(page, question: str, profile: Profile, timeout_s: i
 
     for match in matches:
         _click_option(page, match["idx"])
-    learned_answers.save_answer(question, matches[0]["label"] if len(matches) == 1 else response)
+    
+    saved_val = matches[0]["label"] if len(matches) == 1 else response
+    learned_answers.save_answer(question, saved_val)
     return True
 
 
@@ -556,7 +586,13 @@ def _fill_freetext(page, text: str):
 def run():
     profile = Profile.load()
     if not Path(SESSION_FILE).exists():
-        raise SystemExit(f"{SESSION_FILE} not found. Run: python login_capture.py naukri")
+        username, password = get_credentials("naukri")
+        if username and password:
+            print(f"{SESSION_FILE} not found, but saved credentials found in .env. Performing login...")
+            with sync_playwright() as p:
+                perform_login(p, "naukri", headless=False, session_file=SESSION_FILE)
+        else:
+            raise SystemExit(f"{SESSION_FILE} not found. Run: python login_capture.py naukri (or add NAUKRI_EMAIL and NAUKRI_PASSWORD to .env)")
 
     human_timeout = profile.data.get("human_input_timeout_seconds", 120)
     max_pages = profile.data.get("max_pages_per_role", 5)
@@ -577,7 +613,7 @@ def run():
             if applied >= profile.stop_after_n_applications:
                 break
 
-            slug = role.lower().replace(" ", "-")
+            slug = re.sub(r'[^a-zA-Z0-9]+', '-', role.lower()).strip('-')
             exp_param = int(profile.total_experience_years)
             seen_job_ids = set()
             stopped_entirely = False
@@ -608,6 +644,20 @@ def run():
 
                 stop = page_has_stop_signal(page)
                 if stop:
+                    if "login" in stop.lower():
+                        u, pw = get_credentials("naukri")
+                        if u and pw:
+                            print("Session expired. Auto-logging in with saved credentials...")
+                            page.goto("https://www.naukri.com/nlogin/login")
+                            time.sleep(1.5)
+                            fill_credentials_and_submit(page, "naukri", u, pw)
+                            time.sleep(3)
+                            try:
+                                context.storage_state(path=SESSION_FILE)
+                                print("Updated session saved.")
+                                continue
+                            except Exception:
+                                pass
                     print(f"STOPPING: {stop}")
                     log_row([datetime.now(), "naukri", "-", "-", "stopped", stop])
                     stopped_entirely = True
@@ -643,9 +693,19 @@ def run():
 
                         apply_state = check_apply_button(page)
                         if apply_state == "external":
+                            ext_url = get_external_apply_url(page)
+                            log_external_job(
+                                title=card.get("title", ""),
+                                company=card.get("company", ""),
+                                platform="Naukri",
+                                exp=card.get("exp", ""),
+                                location=card.get("location", ""),
+                                listing_url=card.get("href", ""),
+                                external_url=ext_url,
+                            )
                             log_row([datetime.now(), "naukri", card.get("title"),
                                       card.get("company"), "skipped", "external apply"])
-                            print(f"Skipped: {card.get('title')} @ {card.get('company')} — external apply")
+                            print(f"Skipped & Saved to Excel: {card.get('title')} @ {card.get('company')} — external apply")
                             continue
                         if apply_state == "none":
                             log_row([datetime.now(), "naukri", card.get("title"),
@@ -688,6 +748,10 @@ def run():
                         print(f"STOPPING: {e}")
                         log_row([datetime.now(), "naukri", card.get("title"),
                                   card.get("company"), "stopped", str(e)])
+                        try:
+                            context.storage_state(path=SESSION_FILE)
+                        except Exception:
+                            pass
                         browser.close()
                         return
 
@@ -708,6 +772,11 @@ def run():
             if stopped_entirely:
                 break
 
+        try:
+            context.storage_state(path=SESSION_FILE)
+            print(f"Updated session state saved to {SESSION_FILE}.")
+        except Exception:
+            pass
         browser.close()
 
     print(f"\nDone. {applied} applications submitted this run. See {LOG_FILE} for the full log.")

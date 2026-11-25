@@ -1,1 +1,18 @@
-.env 
+# Secrets and Credentials
+.env
+*.env
+session_*.json
+
+# Resume & Debug files
+*.pdf
+debug_screenshots/
+
+# Personal application logs and answers
+applications_log.csv
+skipped_external_jobs.*
+learned_answers.json
+
+# Environment and Bytecode
+venv/
+__pycache__/
+*.pyc

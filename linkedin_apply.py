@@ -18,6 +18,18 @@ from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
 from common.profile import Profile
 from common import gemini
+from common import learned_answers
+from common.human_input import ask_user
+from common.auth import (
+    get_credentials,
+    perform_login,
+    launch_stealth_browser,
+    new_stealth_context,
+    get_linkedin_cookie,
+    create_linkedin_session_from_cookie,
+    has_valid_linkedin_session,
+)
+from common.job_exporter import log_external_job
 
 SESSION_FILE = "session_linkedin.json"
 LOG_FILE = "applications_log.csv"
@@ -99,6 +111,13 @@ def fill_form_step(page, profile: Profile, job_context: str):
         if not label or field.get("value"):
             continue  # already filled or unlabeled, leave it
 
+        # 1. Check learned answers from prior applications first
+        stored = learned_answers.get_answer(label)
+        if stored:
+            fill_text_field(page, field["id"], stored)
+            print(f"  (⚡ used remembered answer for: {label[:60]})")
+            continue
+
         matched = None
         for key, val in answers.items():
             if key.replace("_", " ") in label:
@@ -113,8 +132,14 @@ def fill_form_step(page, profile: Profile, job_context: str):
         elif field["tag"] in ("INPUT",) and field["type"] == "text":
             draft = gemini.draft_answer(label, profile.data, job_context)
             if draft.startswith("[NEEDS_HUMAN_INPUT"):
-                raise RuntimeError(f"profile gap on '{label}': {draft}")
-            fill_text_field(page, field["id"], draft)
+                response = ask_user(f"LinkedIn screening question:\n{label}", timeout_seconds=90)
+                if response:
+                    learned_answers.save_answer(label, response)
+                    fill_text_field(page, field["id"], response)
+                else:
+                    raise RuntimeError(f"profile gap on '{label}': {draft}")
+            else:
+                fill_text_field(page, field["id"], draft)
 
 
 def click_modal_button(page, text: str) -> bool:
@@ -173,13 +198,22 @@ def run_one_application(page, profile: Profile, job_title: str, company: str) ->
 
 def run():
     profile = Profile.load()
-    if not Path(SESSION_FILE).exists():
-        raise SystemExit(f"{SESSION_FILE} not found. Run: python login_capture.py linkedin")
+    if not has_valid_linkedin_session(SESSION_FILE):
+        cookie = get_linkedin_cookie()
+        if cookie:
+            print("Creating LinkedIn session from LINKEDIN_LI_AT in .env...")
+            create_linkedin_session_from_cookie(cookie, SESSION_FILE)
+        else:
+            raise SystemExit(
+                f"Valid LinkedIn session not found in {SESSION_FILE}!\n"
+                f"Please run: python login_capture.py linkedin\n"
+                f"(Option 1: paste your 'li_at' cookie directly to bypass Cloudflare immediately)"
+            )
 
     applied = 0
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, slow_mo=200)
-        context = browser.new_context(storage_state=SESSION_FILE)
+        browser = launch_stealth_browser(p, headless=False, slow_mo=200)
+        context = new_stealth_context(browser, storage_state=SESSION_FILE)
         page = context.new_page()
 
         for role in profile.target_roles:
@@ -198,6 +232,10 @@ def run():
             if stop:
                 print(f"STOPPING: {stop}")
                 log_row([datetime.now(), "linkedin", "-", "-", "stopped", stop])
+                try:
+                    context.storage_state(path=SESSION_FILE)
+                except Exception:
+                    pass
                 browser.close()
                 return
 
@@ -212,6 +250,19 @@ def run():
             for idx, card in enumerate(cards):
                 if applied >= profile.stop_after_n_applications:
                     break
+
+                card_title = (card.get("title") or "").lower()
+                excluded = False
+                for excl in profile.data.get("title_exclude", []):
+                    if excl.lower() in card_title:
+                        log_row([datetime.now(), "linkedin", card.get("title"),
+                                  card.get("company"), "skipped", f"title matched excluded pattern ({excl})"])
+                        print(f"Skipped: {card.get('title')} @ {card.get('company')} — excluded title ({excl})")
+                        excluded = True
+                        break
+                if excluded:
+                    continue
+
                 try:
                     page.click(f"(.jobs-search-results-list li, .scaffold-layout__list li) >> nth={idx}")
                     time.sleep(1.5)
@@ -222,17 +273,33 @@ def run():
                                   card.get("company"), "applied", ""])
                         print(f"Applied: {card.get('title')} @ {card.get('company')} ({applied} total)")
                     else:
+                        log_external_job(
+                            title=card.get("title", ""),
+                            company=card.get("company", ""),
+                            platform="LinkedIn",
+                            listing_url=page.url,
+                        )
                         log_row([datetime.now(), "linkedin", card.get("title"),
-                                  card.get("company"), "skipped", "no Easy Apply button"])
+                                  card.get("company"), "skipped", "no Easy Apply button (external apply)"])
+                        print(f"Skipped & Saved to Excel: {card.get('title')} @ {card.get('company')} — external apply")
                 except RuntimeError as e:
                     print(f"STOPPING: {e}")
                     log_row([datetime.now(), "linkedin", card.get("title"),
                               card.get("company"), "stopped", str(e)])
+                    try:
+                        context.storage_state(path=SESSION_FILE)
+                    except Exception:
+                        pass
                     browser.close()
                     return
 
                 time.sleep(profile.pace_seconds_between_actions)
 
+        try:
+            context.storage_state(path=SESSION_FILE)
+            print(f"Updated session state saved to {SESSION_FILE}.")
+        except Exception:
+            pass
         browser.close()
 
     print(f"\nDone. {applied} applications submitted this run. See {LOG_FILE} for the full log.")

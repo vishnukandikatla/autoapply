@@ -29,4 +29,6 @@ def ask_user(prompt: str, timeout_seconds: int = 120) -> str | None:
         return None
 
     value = answer_holder.get("value")
+    if value:
+        print(f"  ✓ Received response: '{value}'")
     return value if value else None
